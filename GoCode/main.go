@@ -1,10 +1,15 @@
 package main
 import(
+	DB "JSMPJ_vue_go/GoCode/src/system/db"
 	"net/http"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/handlers"
 )
 func main(){
+	_, err := DB.Connect()
+	if err != nil{
+		return
+	}
 	r := mux.NewRouter()
 	methods := handlers.AllowedHeaders([]string{"GET","POST","PUT","DELETE"})
 	origins := handlers.AllowedOrigins([]string{"*"})
