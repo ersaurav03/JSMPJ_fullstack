@@ -6,14 +6,20 @@ import(
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/handlers"
+	"reflect"
 
 )
 type User struct {
-
+	Id int64 `json:"id"`
 	FName string `json:"fname"`
-
-
+	LName string `json:"lname"`
+	Email string `json:"email"`
+	Password string `json:"password"`
 }
+type DataCollection struct{
+	DC []User `json:"items"`
+}
+var arr[] string
 func main(){
 	_, err := DB.Connect()
 	if err != nil{
@@ -38,20 +44,39 @@ func main(){
 
 	fmt.Println("Successfully inserted into user tables")
 
-	results, err := db.Query("SELECT first_name from users1")
+	rows, err := db.Query("SELECT * from users1")
 	if err != nil{
 		panic(err.Error())
 	}
-    for results.Next(){
-		var user User
-		err = results.Scan(&user.FName)
-		// err = results.Scan(&user.LName)
-		if err != nil{
-			panic(err.Error())
+	result1:=DataCollection{}
+	defer rows.Close()
+	result := DataCollection{}
+	for rows.Next(){
+		data := User{}
+		err2:= rows.Scan(&data.Id,&data.FName,&data.LName,&data.Email,&data.Password)
+        if err2 != nil{
+			panic(err2)
 		}
-		fmt.Println(user.FName)
-		// fmt.Println(user.LName)
+		result.DC = append(result.DC ,data)
+		result1.DC = append(result.DC ,data)
+		//  arr[0]=result.DC[0]
+		fmt.Println(reflect.TypeOf(result.DC))
+		fmt.Println(data)
+	
 	}
+	fmt.Println(result1.DC)
+    // for results.Next(){
+	// 	var user User
+	// 	err = results.Scan(&user.FName)
+	// 	// err = results.Scan(&user.LName)
+	// 	if err != nil{
+	// 		panic(err.Error())
+	// 	}
+	// 	arr[0]= user.FName
+	// 	fmt.Println(user.FName)
+		
+	// 	// fmt.Println(user.LName)
+	// }
 	r := mux.NewRouter()
 	methods := handlers.AllowedHeaders([]string{"GET","POST","PUT","DELETE"})
 	origins := handlers.AllowedOrigins([]string{"*"})
